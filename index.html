@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<title>AI Resume Screening & Job Recommendation System</title>
+
+<style>
+body{
+    margin:0;
+    padding:20px;
+    font-family:Arial,sans-serif;
+    background:linear-gradient(135deg,#667eea,#764ba2,#00c9a7);
+    min-height:100vh;
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+    background:white;
+    padding:30px;
+    border-radius:20px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.3);
+}
+
+h1{
+    text-align:center;
+    color:#6c5ce7;
+}
+
+.card{
+    background:#0984e3;
+    color:white;
+    text-align:center;
+    padding:15px;
+    border-radius:15px;
+    margin-bottom:20px;
+    font-size:22px;
+    font-weight:bold;
+}
+
+.section{
+    margin-top:25px;
+    margin-bottom:25px;
+}
+
+input{
+    padding:10px;
+    margin:5px;
+}
+
+#skills{
+    width:300px;
+}
+
+button{
+    padding:10px 20px;
+    background:#00b894;
+    color:white;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:15px;
+}
+
+th{
+    background:#2d3436;
+    color:white;
+    padding:12px;
+}
+
+td{
+    border:1px solid #ddd;
+    padding:10px;
+    text-align:center;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🤖 AI Resume Screening & Job Recommendation System</h1>
+
+<div class="card">
+AI Based Resume Analysis Dashboard
+</div>
+
+<div class="section">
+<h2>Upload Resume</h2>
+
+<input type="file" id="resumeFile">
+
+<button onclick="uploadResume()">
+Upload Resume
+</button>
+</div>
+
+<div class="section">
+<h2>Candidate Skills</h2>
+
+<input
+type="text"
+id="skills"
+placeholder="Example: Java, Spring Boot, SQL">
+
+<button onclick="recommendJobs()">
+Get Recommendations
+</button>
+</div>
+
+<div class="section">
+
+<h2>Recommended Jobs</h2>
+
+<table>
+
+<thead>
+<tr>
+<th>Job Title</th>
+<th>Company</th>
+<th>Match Score</th>
+</tr>
+</thead>
+
+<tbody id="recommendationTable">
+<tr>
+<td colspan="3">No Recommendations Yet</td>
+</tr>
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+async function uploadResume() {
+
+    const file =
+        document.getElementById("resumeFile").files[0];
+
+    if (!file) {
+        alert("Please Select Resume");
+        return;
+    }
+
+    let formData = new FormData();
+    formData.append("file", file);
+
+    try {
+
+        const response =
+            await fetch("/uploadResume", {
+                method: "POST",
+                body: formData
+            });
+
+        const skills =
+            await response.text();
+
+        document.getElementById("skills").value =
+            skills;
+
+        alert("Resume Uploaded Successfully");
+
+    } catch(error) {
+
+        alert("Upload Failed");
+        console.log(error);
+
+    }
+}
+
+function recommendJobs(){
+
+    let skills =
+        document.getElementById("skills")
+        .value
+        .toLowerCase();
+
+    let rows = "";
+
+    if(skills.includes("java")){
+        rows += `
+        <tr>
+        <td>Java Developer</td>
+        <td>TCS</td>
+        <td>90%</td>
+        </tr>`;
+    }
+
+    if(skills.includes("spring")){
+        rows += `
+        <tr>
+        <td>Spring Boot Developer</td>
+        <td>Deloitte</td>
+        <td>95%</td>
+        </tr>`;
+    }
+
+    if(skills.includes("sql")){
+        rows += `
+        <tr>
+        <td>Backend Developer</td>
+        <td>Infosys</td>
+        <td>85%</td>
+        </tr>`;
+    }
+
+    if(rows === ""){
+        rows = `
+        <tr>
+        <td colspan="3">
+        No Matching Jobs Found
+        </td>
+        </tr>`;
+    }
+
+    document.getElementById(
+        "recommendationTable"
+    ).innerHTML = rows;
+}
+
+</script>
+
+</body>
+</html>
